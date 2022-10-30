@@ -1,22 +1,16 @@
 package com.gdx.chess;
 
-import java.util.List;
 import java.util.Random;
 
 public class Computer {
 
 	Colour color;
-	List<Piece> myPieces;
-	List<Piece> opponentPieces;
 	Random rand = new Random();
 	
 	
 	public Computer(Colour color) {
 		
 		this.color=color;
-		
-		myPieces = (color==Colour.BLACK) ? Board.blackPieces : Board.whitePieces;
-		opponentPieces = (color==Colour.WHITE) ? Board.blackPieces : Board.whitePieces;
 	}
 	
 	
@@ -25,30 +19,28 @@ public class Computer {
 		if(GameState.playerTurn!=this.color) {
 			return;
 		}
-		
-		if(false && MoveLogic.isInCheck(null)) {
-			for(Piece p : Board.whitePieces) {
-				p.getValidMoves(); // calculates opponent controlled squares
-			}
-			MoveLogic.findKingMoves(null, 0, 0);
-		}
-		else {
 			makeRandomMove();
-		}
 	}
 	
 	private void makeRandomMove() {
 		
-		int numMoves = 0;
-		Piece piece = null;
+		Move m = GameState.moves.get(rand.nextInt(GameState.moves.size()));
+		int fromIndex = Long.numberOfTrailingZeros(m.from);
+		int toIndex = Long.numberOfTrailingZeros(m.to);
+		//System.out.println("from: " + fromIndex + " to: " + toIndex);
+		Board.board[fromIndex].moveTo(toIndex);
 		
-		while(numMoves==0) {
-			piece = myPieces.get(rand.nextInt(myPieces.size())); 
-			numMoves = piece.validList.size();
+		GameState.update(m);
+		
+		for(Piece p: GameState.whitePieces) {
+		    long move = p.legalMoves;
+		    p.validList.clear();
+			while(move!=0) {
+				int squareIndex = Long.numberOfTrailingZeros(move);
+				p.validList.add(squareIndex);
+				move &= (move -1);
+			}
 		}
-		
-		int pos = piece.validList.get(rand.nextInt(piece.validList.size()));
-		piece.moveTo(pos/8, pos%8);	
 	}
 	
 }

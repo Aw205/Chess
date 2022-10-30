@@ -14,7 +14,6 @@ public class PieceMovementListener extends DragListener {
 	public PieceMovementListener(Piece p) {
         
 		this.piece=p;
-		
 	}
 	
 	@Override
@@ -40,9 +39,7 @@ public class PieceMovementListener extends DragListener {
 		piece.isTouching=true;
 		
 		//Board.tiles[piece.row][piece.col].setColor(0.9922f,0.9922f,0.5882f, 1f);
-		
 		return true;
-		
 	}
 	
 	@Override
@@ -57,32 +54,31 @@ public class PieceMovementListener extends DragListener {
 		
 		int row = (int) ((event.getStageY() - 20) / 50);
 		int col = (int) ((event.getStageX() - 100) / 50);
+		int square = row*8 + col;
 
-		if (GameState.playerTurn==piece.color && piece.canMoveTo(row, col)) {
-
+		if (GameState.playerTurn == piece.color && piece.canMoveTo(square)) {
 			//Board.tiles[row][col].setColor(1,1,0.5f, 0.75f);
-
-			//piece.capture(Board.board[row][col]);
-
-			Board.board[piece.row][piece.col] = null;
-			GameState.setUnoccupied(piece.row, piece.col);
-
-			piece.row = row;
-			piece.col = col;
-
-			Board.board[piece.row][piece.col] = piece;
-			GameState.setOccupied(piece.row, piece.col);
-
-			GameState.blackControlled = 0;
-			GameState.whiteControlled = 0;
 			
-			Board.generateValidMoves();
+			//updating game state
+			long from = 1L << (piece.squareIndex);
+			long to = 1L << (square);
+			Move m  = new Move(from,to);
 			
+			if(Board.board[square]!=null) { 
+				Board.board[square].remove();
+			}
 			
-			GameState.playerTurn=GameState.playerTurn.opposite();
+			GameState.update(m);
+			
+//			piece.validList.clear();
+//			for(long i = 1, num = 0; num < 64; i <<= 1, num++) {
+//				if((piece.legalMoves & i) != 0) {
+//					piece.validList.add((int) num);
+//				}
+//			}
+			
 		}
-		piece.setPosition(100 + piece.getWidth() * piece.col, 20 + piece.getHeight() * piece.row);
-		
+		piece.setPosition(100 + piece.getWidth() * (piece.squareIndex%8), 20 + piece.getHeight() * (piece.squareIndex/8));
 		piece.isTouching=false;
 
 	}

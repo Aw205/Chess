@@ -11,113 +11,92 @@ public class Board extends Stage {
 	public static final int BOARD_WIDTH=8;
 	public static final int BOARD_HEIGHT=8;
 	
-	static Piece[][] board = new Piece[8][8];
+	static Piece[] board = new Piece[64];
 	static Image[][] tiles = new Image[8][8];
 	
 	static List<Piece> blackPieces = new ArrayList<Piece>();
 	static List<Piece> whitePieces = new ArrayList<Piece>();
 	
-	static Piece king;
+	static Piece wKing;
+	static Piece bKing;
 
 	
 	public Board() {
 
 		generateBoard();		
-		
 	}
 	
 	
 	public void generateBoard() {
 		
-		parseFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");		
+		parseFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
 		
-		for(int i=0;i<BOARD_WIDTH;i++) {
-			for(int j=0;j<BOARD_HEIGHT;j++) {
-				if(board[i][j]!=null)
-				{
-					this.addActor(board[i][j]);
-				}
+		for(int i = 0; i< 64;i++) {
+			if(board[i]!= null) {
+				this.addActor(board[i]);
 			}
 		}
-		generateValidMoves();
-	}
-	
-	public static void generateValidMoves() {
+		GameState.init();
 		
-		if(MoveLogic.isInCheck(king)) {
-			System.out.println("here in check!");
-			return;
-		}
-		
-		for (int i = 0; i < 8; i++) {
-			for (int j = 0; j < 8; j++) {
-				if (Board.board[i][j] != null) {
-					Board.board[i][j].getValidMoves();
-				}
-			}
-		}
 	}
-	
 	
 	// starting fen: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 	// could redo with regex maybe?
 	public void parseFEN(String fen) {
 		
-		int row=7;
-		int col=0;
+		int idx = 56;
 		
 		for(int i=0;i<fen.length();i++) {
-			
 			char c = fen.charAt(i);
 			if(c=='/') {
-				row--;
-				col=0;
+				idx-=16;
 				continue;
 			}
 			if(Character.isDigit(c)) {
-				col+= Character.getNumericValue(c)-1;
+				idx+= Character.getNumericValue(c);
 				continue;
 			}	
 			Colour color = (Character.isLowerCase(c)) ? Colour.BLACK : Colour.WHITE;
 			List<Piece> list = (color==Colour.BLACK) ? blackPieces : whitePieces;
 			
 			switch(Character.toLowerCase(c)) {
-			
 				case 'p':
-					board[row][col]= new Piece(row,col,Type.PAWN,color);
-					list.add(board[row][col]);
+					board[idx]= new Piece(idx,Type.PAWN,color);
+					list.add(board[idx]);
 					break;
 				case 'b':
-					board[row][col]= new Piece(row,col,Type.BISHOP,color);
-					list.add(board[row][col]);
+					board[idx]= new Piece(idx,Type.BISHOP,color);
+					list.add(board[idx]);
 					break;
 				
 				case 'n':
-					board[row][col]= new Piece(row,col,Type.KNIGHT,color);
-					list.add(board[row][col]);
+					board[idx]= new Piece(idx,Type.KNIGHT,color);
+					list.add(board[idx]);
 					break;
 				
 				case 'r':
-					board[row][col]= new Piece(row,col,Type.ROOK,color);
-					list.add(board[row][col]);
+					board[idx]= new Piece(idx,Type.ROOK,color);
+					list.add(board[idx]);
 					break;
 				case 'q':
-					board[row][col]= new Piece(row,col,Type.QUEEN,color);
-					list.add(board[row][col]);
+					board[idx]= new Piece(idx,Type.QUEEN,color);
+					list.add(board[idx]);
 					break;
 				case 'k':
-					board[row][col]= new Piece(row,col,Type.KING,color);
-					list.add(board[row][col]);
+					board[idx]= new Piece(idx,Type.KING,color);
+					list.add(board[idx]);
 					if(color==Colour.WHITE) {
-						king=board[row][col];	
+						wKing=board[idx];	
+					}
+					else {
+						bKing=board[idx];	
 					}
 					break;
 				default :
 					System.err.println("Invalid FEN");
 				}
-				GameState.setOccupied(row, col);
-			col++;
+			
+			idx++;
 		}
-		
 	}
 }

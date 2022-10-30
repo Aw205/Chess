@@ -21,6 +21,7 @@ public class AssetsManager {
 	private void loadTextures() {
 		
 		manager.load("circle.png",Texture.class);
+		manager.load("hollow_circle.png",Texture.class);
 			
 		manager.load("d_bishop.png", Texture.class);
 		manager.load("d_king.png", Texture.class);
