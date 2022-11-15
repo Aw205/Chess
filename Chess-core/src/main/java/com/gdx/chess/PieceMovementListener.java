@@ -12,20 +12,16 @@ public class PieceMovementListener extends DragListener {
 	private Piece piece;
 	
 	public PieceMovementListener(Piece p) {
-        
 		this.piece=p;
 	}
 	
 	@Override
 	public void enter(InputEvent event, float x, float y, int pointer,Actor fromActor) {
-		
 		Gdx.graphics.setSystemCursor(SystemCursor.Hand);
-		
 	}
 	
 	@Override
 	public void exit(InputEvent event, float x, float y, int pointer,Actor fromActor) {
-		
 		Gdx.graphics.setSystemCursor(SystemCursor.Arrow);
 	}
 	
@@ -38,48 +34,34 @@ public class PieceMovementListener extends DragListener {
 		piece.setZIndex(100);
 		piece.isTouching=true;
 		
-		//Board.tiles[piece.row][piece.col].setColor(0.9922f,0.9922f,0.5882f, 1f);
 		return true;
 	}
 	
 	@Override
 	public void touchDragged(InputEvent event, float x, float y, int pointer) {
-		
 		piece.moveBy(x - piece.getWidth() / 2, y - piece.getHeight() / 2);
-		
 	}
 	
 	@Override
-	public void touchUp(InputEvent event, float x, float y, int pointer,int button) {
-		
+	public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+
 		int row = (int) ((event.getStageY() - 20) / 50);
 		int col = (int) ((event.getStageX() - 100) / 50);
-		int square = row*8 + col;
+		int square = row * 8 + col;
 
 		if (GameState.playerTurn == piece.color && piece.canMoveTo(square)) {
-			//Board.tiles[row][col].setColor(1,1,0.5f, 0.75f);
+
+			long from = MoveLogic.squareToBB.get(piece.squareIndex);
+			long to = MoveLogic.squareToBB.get(square);
+			Move m = new Move(from, to);
 			
-			//updating game state
-			long from = 1L << (piece.squareIndex);
-			long to = 1L << (square);
-			Move m  = new Move(from,to);
-			
-			if(Board.board[square]!=null) { 
+			if (Board.board[square] != null) {
 				Board.board[square].remove();
 			}
-			
 			GameState.update(m);
-			
-//			piece.validList.clear();
-//			for(long i = 1, num = 0; num < 64; i <<= 1, num++) {
-//				if((piece.legalMoves & i) != 0) {
-//					piece.validList.add((int) num);
-//				}
-//			}
-			
 		}
-		piece.setPosition(100 + piece.getWidth() * (piece.squareIndex%8), 20 + piece.getHeight() * (piece.squareIndex/8));
-		piece.isTouching=false;
+		piece.setPosition(100 + piece.getWidth() * (piece.squareIndex % 8),20 + piece.getHeight() * (piece.squareIndex / 8));
+		piece.isTouching = false;
 
 	}
 }

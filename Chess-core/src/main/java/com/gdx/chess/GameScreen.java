@@ -17,7 +17,7 @@ public class GameScreen implements Screen {
 	private InputMultiplexer multiplexer = new InputMultiplexer();
 
 	public GameScreen(Chess chess, AssetsManager am) {
-		this.am=am;
+		//GameScreen.am=am;
 		multiplexer.addProcessor(board);
 		multiplexer.addProcessor(tileBoard);
 		Gdx.input.setInputProcessor(multiplexer);
@@ -30,24 +30,22 @@ public class GameScreen implements Screen {
 	}
 
 	@Override
-	public void show() {
-		
-		
-	}
-
-	@Override
 	public void render(float delta) {
 		
 		Gdx.gl.glClearColor(0.15f, 0.15f, 0.2f, 1f);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		tileBoard.act();
+		//tileBoard.act();
 		board.act();
 		
 		computer.search();
 		
 		tileBoard.draw();
 		board.draw();
+	}
+	
+	@Override
+	public void show() {
 		
 		
 	}

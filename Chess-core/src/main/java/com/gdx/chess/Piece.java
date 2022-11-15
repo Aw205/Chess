@@ -14,7 +14,7 @@ enum Type{
 
 enum Colour{
 	
-	BLACK,WHITE;
+	WHITE,BLACK;
 	
 	private static final Colour[] VALUES = values();
 	
@@ -25,16 +25,16 @@ enum Colour{
 
 public class Piece extends Actor{
 	
-	static Texture[][] textures= new Texture[2][6];
-	static Texture circle;
-	static Texture hollowCircle;
-	
-	Texture currentTexture; 
-	Type type = Type.BISHOP;
-	
+	private static Texture[][] textures= new Texture[2][6];
+	private static Texture circle;
+	private static Texture hollowCircle;
+	private Texture currentTexture; 
 	private final int HEIGHT=50;
 	private final int WIDTH=50;
 	
+	
+	Type type = Type.BISHOP;
+
 	public boolean isTouching = false;
 	
 	public int squareIndex = 0;
@@ -54,25 +54,33 @@ public class Piece extends Actor{
 	
 	public Piece(int squareIndex,Type type,Colour color) {
 		
-		currentTexture=textures[color.ordinal()][type.ordinal()];
-		
-		this.type=type;
-		this.color=color;
+		currentTexture = textures[color.ordinal()][type.ordinal()];
+
+		this.type = type;
+		this.color = color;
 		this.squareIndex = squareIndex;
-		
-		this.setX(100+WIDTH* (squareIndex%8));
-		this.setY(20+HEIGHT* (squareIndex/8));
+
+		this.setX(100 + WIDTH * (squareIndex % 8));
+		this.setY(20 + HEIGHT * (squareIndex / 8));
 		this.setHeight(HEIGHT);
 		this.setWidth(WIDTH);
 		this.addListener(new PieceMovementListener(this));
-		
+
 	}
 	
 	public long generateLegalMoves() {
 		
 		generateAttackedSquares();
-		pseudoLegalMoves = MoveLogic.filterPseudoLegalMoves(attackedSquares, color); 
-		legalMoves =  MoveLogic.filterLegalMoves(type,color,pseudoLegalMoves);
+
+		pseudoLegalMoves = MoveLogic.filterPseudoLegalMoves(attackedSquares, color);
+
+		if (type == Type.PAWN) {
+			pseudoLegalMoves &= GameState.occupied;
+			pseudoLegalMoves |= MoveLogic.single_pawn_push(squareIndex, color);
+			pseudoLegalMoves |= MoveLogic.double_pawn_push(squareIndex, color);
+		}
+
+		legalMoves = MoveLogic.filterLegalMoves(type, color, pseudoLegalMoves);
 		return legalMoves;
 		
 	}
@@ -81,21 +89,20 @@ public class Piece extends Actor{
 
 		switch (type) {
 			case PAWN:
-				//attackedSquares = MoveLogic.pawnAttacks[color.ordinal()][squareIndex];
-				attackedSquares = MoveLogic.pawn_moves(squareIndex/8, squareIndex%8, color);
+				attackedSquares = MoveLogic.pawnAttacks[color.ordinal()][squareIndex];
 				break;
 			case BISHOP:
-				attackedSquares = MoveLogic.bishop_moves(squareIndex);
+				attackedSquares = MoveLogic.bishop_moves(squareIndex,GameState.occupied);
 				break;
 			case KNIGHT:
 				attackedSquares = MoveLogic.knightAttacks[squareIndex];
 				break;
 			case ROOK:
-				attackedSquares = MoveLogic.rook_moves(squareIndex);
+				attackedSquares = MoveLogic.rook_moves(squareIndex,GameState.occupied);
 				break;
 			case QUEEN:
-				attackedSquares = MoveLogic.rook_moves(squareIndex);
-				attackedSquares |= MoveLogic.bishop_moves(squareIndex);
+				attackedSquares = MoveLogic.rook_moves(squareIndex,GameState.occupied);
+				attackedSquares |= MoveLogic.bishop_moves(squareIndex,GameState.occupied);
 				break;
 			case KING:
 				attackedSquares = MoveLogic.kingAttacks[squareIndex];
@@ -131,19 +138,18 @@ public class Piece extends Actor{
 	
 	public boolean canMoveTo(int square) {
 		
-		return (legalMoves & (1L << square))!=0;
+		return (legalMoves & MoveLogic.squareToBB.get(square))!=0;
 	}
 	
 	public void moveTo(int square) {
-		
+
 		int row = square / 8;
 		int col = square % 8;
 		this.addAction(Actions.moveTo(100 + this.getWidth() * col, 20 + this.getHeight() * row, 0.5f));
-		if(Board.board[square]!=null) {
+		if (Board.board[square] != null) {
 			Board.board[square].remove();
 		}
 	}
-	
 	
 	private static void mapTextures() {
 		

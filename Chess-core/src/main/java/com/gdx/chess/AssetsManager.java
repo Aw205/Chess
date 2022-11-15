@@ -13,11 +13,6 @@ public class AssetsManager {
 		loadTextures();
 	}
 	
-	
-	
-	
-	
-	
 	private void loadTextures() {
 		
 		manager.load("circle.png",Texture.class);

@@ -36,7 +36,7 @@ public class TileBoard extends Stage {
 		for (int i = 0; i < Board.BOARD_WIDTH; i++) {
 			for (int j = 0; j < Board.BOARD_HEIGHT; j++) {
 
-				Tile img = ((i + j) % 2 == 0) ? new Tile(tan) : new Tile(brown);
+				Tile img = ((i + j) % 2 == 0) ? new Tile(brown) : new Tile(tan);
 				img.setPosition(100 + TILE_LENGTH * j, 20 + TILE_LENGTH * i);
 				group.addActor(img);
 				tiles[i][j] = img;

@@ -16,19 +16,18 @@ public class Computer {
 	
 	public void search() {
 		
-		if(GameState.playerTurn!=this.color) {
-			return;
-		}
+		if(GameState.playerTurn == this.color) {
 			makeRandomMove();
+		}
 	}
 	
 	private void makeRandomMove() {
 		
 		Move m = GameState.moves.get(rand.nextInt(GameState.moves.size()));
-		int fromIndex = Long.numberOfTrailingZeros(m.from);
-		int toIndex = Long.numberOfTrailingZeros(m.to);
-		//System.out.println("from: " + fromIndex + " to: " + toIndex);
-		Board.board[fromIndex].moveTo(toIndex);
+		int from = MoveLogic.BBtoSquare.get(m.from);
+		int to = MoveLogic.BBtoSquare.get(m.to);
+		
+		Board.board[from].moveTo(to);
 		
 		GameState.update(m);
 		
