@@ -20,8 +20,8 @@ public class Board extends Stage {
 	
 	public void generateBoard() {
 		
-		//parseFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
-		parseFEN("rnbqk2r/pppp1ppp/5n2/4p3/1b2P3/2NP4/PPP3PP/R1BQKBNR"); // test pins
+		parseFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+		//parseFEN("rnbqk2r/pppp1ppp/5n2/4p3/1b2P3/2NP4/PPP3PP/R1BQKBNR"); // test pins
 		
 		for(int i = 0; i< 64;i++) {
 			if(board[i]!= null) {

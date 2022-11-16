@@ -5,9 +5,9 @@ import java.util.Map;
 
 public class MoveLogic {
 	
-	public static long capture_mask = Long.MAX_VALUE;
-	public static long push_mask = Long.MAX_VALUE;
-	public static long king_mask = Long.MAX_VALUE;
+	public static long capture_mask = -1;
+	public static long push_mask = -1;
+	public static long king_mask = -1;
 	public static long pinned = 0;
 	
 	public static Map<Integer,Long> squareToBB = new HashMap<Integer,Long>();
@@ -101,15 +101,18 @@ public class MoveLogic {
 	public static long single_pawn_push(int square, Colour color) {
 		
 		long pawn_move = MoveLogic.squareToBB.get(square);
-		return ((pawn_move << 8) >> (color.ordinal() << 4)) & ~(GameState.occupied);
+		long push =  (color == Colour.WHITE) ? pawn_move << 8 & ~rankMasks[0] : pawn_move >> 8 & ~rankMasks[7];
+		return push & ~GameState.occupied;
 		
 	}
 	
 	public static long double_pawn_push(int square, Colour color) {
 		
-		long rank = (color == Colour.WHITE) ? rankMasks[3] : rankMasks[4];
+		long rankMask = (color == Colour.WHITE) ? rankMasks[3] : rankMasks[4];
 		long push = single_pawn_push(square,color);
-		return ((push << 8) >> (color.ordinal() << 4)) & ~(GameState.occupied) & rank;
+		long double_push = (color == Colour.WHITE) ? push << 8 : push >> 8;
+		return double_push & ~GameState.occupied & rankMask;
+		//return ((push << 8) >> (color.ordinal() << 4)) & ~(GameState.occupied) & rankMask;
 		
 	}
 	
@@ -131,7 +134,7 @@ public class MoveLogic {
 	
 	public static void findAbsolutePins() {
 		
-		long occRQ = GameState.piecePosition[GameState.playerTurn.ordinal()][Type.ROOK.ordinal()];
+		long occRQ = GameState.piecePosition[GameState.playerTurn.ordinal()][Type.ROOK.ordinal()]; // still need to account for queen
 		long occBQ = GameState.piecePosition[GameState.playerTurn.ordinal()][Type.BISHOP.ordinal()];
 		
 		long kingBB = GameState.piecePosition[GameState.playerTurn.opposite().ordinal()][Type.KING.ordinal()];
@@ -183,12 +186,12 @@ public class MoveLogic {
 
 		east = (pos << 1) & ~fileMasks[0];
 		west = (pos >> 1) & ~fileMasks[7];
-		attacks = (east | west) << 16;
-		attacks |= (east | west) >> 16;
+		attacks = (east | west) << 16 & (~rankMasks[0] & ~rankMasks[1]);
+		attacks |= (east | west) >> 16 & (~rankMasks[7] & ~rankMasks[6]);
 		east = (east << 1) & ~fileMasks[0];
 		west = (west >> 1) & ~fileMasks[7];
-		attacks |= (east | west) << 8;
-		attacks |= (east | west) >> 8;
+		attacks |= (east | west) << 8 & (~rankMasks[0]);
+		attacks |= (east | west) >> 8 & (~rankMasks[7]);
 
 		return attacks;
 
@@ -209,7 +212,7 @@ public class MoveLogic {
 		
 		for (int row = 0; row < 8; row++) {
 
-			rankMasks[row] = 0xFFL << row * 8;
+			rankMasks[row] = 0xFFL << (row * 8);
 			fileMasks[row] = 0x101010101010101L << row;
 		}
 		

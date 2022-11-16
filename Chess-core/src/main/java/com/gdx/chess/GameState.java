@@ -112,8 +112,9 @@ public final class GameState {
 		
 		long kingPos = GameState.piecePosition[playerTurn.opposite().ordinal()][Type.KING.ordinal()];
 		int kingIndex = MoveLogic.BBtoSquare.get(kingPos);
-		long checkers = MoveLogic.getAttackersToKing(playerTurn,kingIndex);
 		
+		
+		long checkers = MoveLogic.getAttackersToKing(playerTurn,kingIndex);
 		if (checkers != 0) {
 			MoveLogic.updateCheckMasks(kingIndex, checkers);
 		}
@@ -137,9 +138,9 @@ public final class GameState {
 		}
 		
 		//reset check mask
-		MoveLogic.capture_mask= Long.MAX_VALUE;
-		MoveLogic.push_mask= Long.MAX_VALUE;
-		MoveLogic.king_mask = Long.MAX_VALUE;
+		MoveLogic.capture_mask= -1;
+		MoveLogic.push_mask= -1;
+		MoveLogic.king_mask = -1;
 	}
 	
 	

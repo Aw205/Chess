@@ -40,7 +40,7 @@ public class Piece extends Actor{
 	public int squareIndex = 0;
 	public Colour color;
 	
-	public long legalMoves =0;
+	public long legalMoves = 0;
 	public long pseudoLegalMoves =0;
 	public long attackedSquares =0;
 	public List<Integer> validList = new ArrayList<Integer>();
@@ -81,6 +81,7 @@ public class Piece extends Actor{
 		}
 
 		legalMoves = MoveLogic.filterLegalMoves(type, color, pseudoLegalMoves);
+		
 		return legalMoves;
 		
 	}
@@ -131,7 +132,7 @@ public class Piece extends Actor{
 				batch.draw(hollowCircle,100+WIDTH*(num%8),20+HEIGHT*(num/8),50,50);
 				continue;
 			}
-			batch.draw(circle,115+WIDTH*(num%8),35+HEIGHT*(num/8),20,20); // Least Significant file mapping
+			batch.draw(circle,115+WIDTH*(num%8),35+HEIGHT*(num/8),20,20);
 		}
 	}
 	
