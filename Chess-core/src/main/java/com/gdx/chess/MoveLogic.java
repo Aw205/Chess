@@ -10,6 +10,10 @@ public class MoveLogic {
 	public static long king_mask = -1;
 	public static long pinned = 0;
 	
+	public static long [][] castleSquares = new long [2][2];
+	public static int [][] castleTargetSquares = {{6,2},{62,58}};
+	public static int [][] initialRookSquares = {{0,7},{56,63}};
+	
 	public static Map<Integer,Long> squareToBB = new HashMap<Integer,Long>();
 	public static Map<Long,Integer> BBtoSquare = new HashMap<Long,Integer>();
 	
@@ -73,14 +77,14 @@ public class MoveLogic {
 	}
 	
 
-	public static long filterLegalMoves(Type type,Colour color,long moves) {
+	public static long filterLegalMoves(Type type,Colour color,long pin_mask,long moves) {
 		
 		if(type == Type.KING) {
 			 moves &= ~GameState.attackedSquares[color.opposite().ordinal()]; 
 			 moves &= king_mask;
 			 return moves;
 		}
-			return moves &= (push_mask | capture_mask);
+			return moves &= (push_mask | capture_mask) & pin_mask;
 	}
 	
 	public static long filterPseudoLegalMoves(long moves,Colour pColor) { 
@@ -112,10 +116,9 @@ public class MoveLogic {
 		long push = single_pawn_push(square,color);
 		long double_push = (color == Colour.WHITE) ? push << 8 : push >> 8;
 		return double_push & ~GameState.occupied & rankMask;
-		//return ((push << 8) >> (color.ordinal() << 4)) & ~(GameState.occupied) & rankMask;
 		
 	}
-	
+
 	
 	public static long getAttackersToKing(Colour pColor,int kingIndex) {
 		
@@ -134,8 +137,9 @@ public class MoveLogic {
 	
 	public static void findAbsolutePins() {
 		
-		long occRQ = GameState.piecePosition[GameState.playerTurn.ordinal()][Type.ROOK.ordinal()]; // still need to account for queen
-		long occBQ = GameState.piecePosition[GameState.playerTurn.ordinal()][Type.BISHOP.ordinal()];
+		long occQ =  GameState.piecePosition[GameState.playerTurn.ordinal()][Type.QUEEN.ordinal()];
+		long occRQ = GameState.piecePosition[GameState.playerTurn.ordinal()][Type.ROOK.ordinal()] | occQ; 
+		long occBQ = GameState.piecePosition[GameState.playerTurn.ordinal()][Type.BISHOP.ordinal()] | occQ;
 		
 		long kingBB = GameState.piecePosition[GameState.playerTurn.opposite().ordinal()][Type.KING.ordinal()];
 		int kingPos = BBtoSquare.get(kingBB);
@@ -170,12 +174,12 @@ public class MoveLogic {
 		push_mask = 0;
 		
 		int attackerIndex = MoveLogic.BBtoSquare.get(attackers);
-		Type t = Board.board[attackerIndex].type;
+		Type t = GameState.board[attackerIndex].type;
 		
 		if(t== Type.BISHOP || t== Type.ROOK || t == Type.QUEEN){
 			
 			push_mask = MoveLogic.inBetween[kingIndex][attackerIndex];
-			king_mask = ~squaresToLine[kingIndex][attackerIndex];
+			king_mask = ~(squaresToLine[kingIndex][attackerIndex] ^ attackers);
 		}
 
 	}
@@ -266,5 +270,9 @@ public class MoveLogic {
 
 			}
 		}
+		castleSquares[0][0] = inBetween[4][7];
+		castleSquares[0][1] = inBetween[0][4];
+		castleSquares[1][0] = inBetween[60][63];
+		castleSquares[1][1] = inBetween[56][63];
 	}
 }

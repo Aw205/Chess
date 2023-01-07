@@ -1,6 +1,7 @@
 package com.gdx.chess;
 
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 
 
@@ -14,6 +15,9 @@ public class AssetsManager {
 	}
 	
 	private void loadTextures() {
+		
+		manager.load("move.ogg",Sound.class);
+		manager.load("capture.ogg",Sound.class);
 		
 		manager.load("circle.png",Texture.class);
 		manager.load("hollow_circle.png",Texture.class);

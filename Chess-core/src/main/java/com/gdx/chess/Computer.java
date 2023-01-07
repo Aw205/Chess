@@ -2,6 +2,8 @@ package com.gdx.chess;
 
 import java.util.Random;
 
+import com.gdx.chess.UI.TileBoard;
+
 public class Computer {
 
 	Colour color;
@@ -12,7 +14,6 @@ public class Computer {
 		
 		this.color=color;
 	}
-	
 	
 	public void search() {
 		
@@ -29,21 +30,9 @@ public class Computer {
 //		System.out.println("----------------------------------");
 		
 		Move m = GameState.moves.get(rand.nextInt(GameState.moves.size()));
-		int from = MoveLogic.BBtoSquare.get(m.from);
-		int to = MoveLogic.BBtoSquare.get(m.to);
-		
-		Board.board[from].moveTo(to);
 		GameState.update(m);
+		TileBoard.update(m,true);
 		
-		for(Piece p: GameState.whitePieces) {
-		    long move = p.legalMoves;
-		    p.validList.clear();
-			while(move!=0) {
-				int squareIndex = Long.numberOfTrailingZeros(move);
-				p.validList.add(squareIndex);
-				move &= (move -1);
-			}
-		}
 	}
 	
 }

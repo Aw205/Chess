@@ -1,4 +1,4 @@
-package com.gdx.chess;
+package com.gdx.chess.UI;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,35 +22,35 @@ public class Tile extends Image{
 		super(texture);
 		
 
-		this.addListener(new ClickListener(Buttons.RIGHT) {		
-			@Override
-			public void clicked(InputEvent event, float x, float y) {			
-				toggleHighlight(Color.RED);
-			}			
-		});	
-		
-		this.addListener(new ClickListener() {		
-			
-			@Override
-			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				
-				Tile.this.setColor(Color.YELLOW);
-				return true;
-			}
-			
-			@Override
-			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-				toggleHighlight(Color.YELLOW);
-				
-			}
-			
-			@Override
-			public void clicked(InputEvent event, float x, float y) {	
-				clearHighlights();
-				toggleHighlight(Color.YELLOW);
-				
-			}			
-		});	
+//		this.addListener(new ClickListener(Buttons.RIGHT) {		
+//			@Override
+//			public void clicked(InputEvent event, float x, float y) {			
+//				toggleHighlight(Color.RED);
+//			}			
+//		});	
+//		
+//		this.addListener(new ClickListener() {		
+//			
+//			@Override
+//			public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+//				
+//				Tile.this.setColor(Color.YELLOW);
+//				return true;
+//			}
+//			
+//			@Override
+//			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+//				toggleHighlight(Color.YELLOW);
+//				
+//			}
+//			
+//			@Override
+//			public void clicked(InputEvent event, float x, float y) {	
+//				clearHighlights();
+//				toggleHighlight(Color.YELLOW);
+//				
+//			}			
+//		});	
 	}
 	
 	private void clearHighlights() {

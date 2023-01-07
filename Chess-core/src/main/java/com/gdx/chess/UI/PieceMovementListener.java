@@ -1,13 +1,16 @@
-package com.gdx.chess;
+package com.gdx.chess.UI;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Cursor.SystemCursor;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
+import com.gdx.chess.Chess;
+import com.gdx.chess.GameState;
+import com.gdx.chess.Move;
 
 public class PieceMovementListener extends DragListener {
-	
 	
 	private Piece piece;
 	
@@ -24,7 +27,6 @@ public class PieceMovementListener extends DragListener {
 	public void exit(InputEvent event, float x, float y, int pointer,Actor fromActor) {
 		Gdx.graphics.setSystemCursor(SystemCursor.Arrow);
 	}
-	
 	
 	// x,y is relative to bottom left of actor
 	@Override
@@ -47,21 +49,22 @@ public class PieceMovementListener extends DragListener {
 
 		int row = (int) ((event.getStageY() - 20) / 50);
 		int col = (int) ((event.getStageX() - 100) / 50);
-		int square = row * 8 + col;
+		int to = row * 8 + col;
+		
+		if (GameState.playerTurn == piece.color && piece.validList.contains(to)) {
 
-		if (GameState.playerTurn == piece.color && piece.canMoveTo(square)) {
-
-			long from = MoveLogic.squareToBB.get(piece.squareIndex);
-			long to = MoveLogic.squareToBB.get(square);
-			Move m = new Move(from, to);
+			String key = Integer.toString(piece.square) + Integer.toString(to);
+			Move m = GameState.movesMap.get(key);
 			
-			if (Board.board[square] != null) {
-				Board.board[square].remove();
-			}
 			GameState.update(m);
+			TileBoard.update(m,false);
+			Chess.am.manager.get("move.ogg",Sound.class).play();
+			
 		}
-		piece.setPosition(100 + piece.getWidth() * (piece.squareIndex % 8),20 + piece.getHeight() * (piece.squareIndex / 8));
+		
+		piece.setPosition(100 + piece.getWidth() * (piece.square % 8),20 + piece.getHeight() * (piece.square / 8));
 		piece.isTouching = false;
 
 	}
+	
 }
